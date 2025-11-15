@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> 
+   هوش مصنوعی جستجوی سعدی کد </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tagline {
+            color: var(--gray);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-engine-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        
+        .engine-btn {
+            background: var(--card-bg);
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        .engine-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .engine-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .search-box {
+            background-color: var(--card-bg);
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .search-box:focus-within {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1.2rem;
+            padding: 10px 15px;
+            background: transparent;
+            color: var(--dark);
+        }
+        
+        .search-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .search-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+        
+        .search-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results-container {
+            display: none;
+        }
+        
+        .results-header {
+            margin-bottom: 20px;
+            color: var(--gray);
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .engine-badge {
+            background: var(--primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .result-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--primary);
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .result-title {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            text-decoration: none;
+            display: block;
+            font-weight: 600;
+        }
+        
+        .result-title:hover {
+            text-decoration: underline;
+            color: var(--secondary);
+        }
+        
+        .result-url {
+            color: var(--success);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            direction: ltr;
+            text-align: left;
+            word-break: break-all;
+        }
+        
+        .result-summary {
+            color: var(--dark);
+            line-height: 1.7;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        
+        .spinner {
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 5px solid var(--primary);
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            border-right: 5px solid #c62828;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+        
+        .no-results i {
+            font-size: 3rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+                padding: 20px;
+                border-radius: 20px;
+            }
+            
+            .search-input {
+                width: 100%;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+            
+            .search-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .engine-btn {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>جستجوگر چندموتوره هوشمند</h1>
+            <p class="tagline">جستجوی پیشرفته با استفاده از چندین موتور جستجوی رایگان - هر چیزی که می‌خواهید پیدا کنید</p>
+        </header>
+        
+        <div class="search-engine-selector">
+            <button class="engine-btn active" data-engine="wikipedia">
+                <i class="fab fa-wikipedia-w"></i>
+                ویکی‌پدیا
+            </button>
+            <button class="engine-btn" data-engine="news">
+                <i class="fas fa-newspaper"></i>
+                اخبار
+            </button>
+            <button class="engine-btn" data-engine="duckduckgo">
+                <i class="fas fa-search"></i>
+                داک‌داک‌گو
+            </button>
+            <button class="engine-btn" data-engine="stackoverflow">
+                <i class="fab fa-stack-overflow"></i>
+                استک اورفلو
+            </button>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="هر چیزی که می‌خواهید جستجو کنید..." id="searchQuery">
+            <button class="search-button" id="searchButton">
+                <i class="fas fa-search"></i>
+                جستجو
+            </button>
+        </div>
+        
+        <div class="error-message" id="errorMessage"></div>
+        
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>در حال جستجو در موتورهای جستجو...</p>
+        </div>
+        
+        <div class="results-container" id="resultsContainer">
+            <div class="results-header">
+                <span id="resultsHeader"></span>
+                <span class="engine-badge" id="engineBadge">ویکی‌پدیا</span>
+            </div>
+            <div id="resultsList"></div>
+        </div>
+        
+        <div class="feature-cards">
+            <div class="feature-card">
+                <i class="fas fa-bolt"></i>
+                <h3>سریع و کارآمد</h3>
+                <p>نتایج جستجو را در کسری از ثانیه دریافت کنید</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>رایگان و امن</h3>
+                <p>استفاده از APIهای رایگان بدون نیاز به ثبت‌نام</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-compass"></i>
+                <h3>جستجوی چندمنظوره</h3>
+                <p>دسترسی به چندین موتور جستجوی تخصصی</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>سیستم جستجوی چندموتوره | استفاده از APIهای رایگان برای دسترسی به اطلاعات</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchQuery');
+            const searchButton = document.getElementById('searchButton');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsHeader = document.getElementById('resultsHeader');
+            const resultsList = document.getElementById('resultsList');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const errorMessage = document.getElementById('errorMessage');
+            const engineBadge = document.getElementById('engineBadge');
+            const engineButtons = document.querySelectorAll('.engine-btn');
+            
+            let currentEngine = 'wikipedia';
+            
+            // فعال کردن موتور جستجوی انتخاب شده
+            engineButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    engineButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentEngine = this.getAttribute('data-engine');
+                    updateEngineBadge();
+                });
+            });
+            
+            // به‌روزرسانی نشانگر موتور جستجو
+            function updateEngineBadge() {
+                const engineNames = {
+                    'wikipedia': 'ویکی‌پدیا',
+                    'news': 'اخبار',
+                    'duckduckgo': 'داک‌داک‌گو',
+                    'stackoverflow': 'استک اورفلو'
+                };
+                engineBadge.textContent = engineNames[currentEngine];
+            }
+            
+            // تابع برای نمایش خطا
+            function showError(message) {
+                errorMessage.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+                errorMessage.style.display = 'block';
+                loadingIndicator.style.display = 'none';
+            }
+            
+            // تابع برای مخفی کردن خطا
+            function hideError() {
+                errorMessage.style.display = 'none';
+            }
+            
+            // تابع برای جستجو با APIهای مختلف
+            async function performSearch(query) {
+                hideError();
+                loadingIndicator.style.display = 'block';
+                resultsContainer.style.display = 'none';
+                
+                try {
+                    let results = [];
+                    
+                    switch(currentEngine) {
+                        case 'wikipedia':
+                            results = await searchWikipedia(query);
+                            break;
+                        case 'news':
+                            results = await searchNews(query);
+                            break;
+                        case 'duckduckgo':
+                            results = await searchDuckDuckGo(query);
+                            break;
+                        case 'stackoverflow':
+                            results = await searchStackOverflow(query);
+                            break;
+                    }
+                    
+                    // نمایش نتایج
+                    displayResults(results, query);
+                    
+                } catch (error) {
+                    showError('خطا در دریافت نتایج: ' + error.message);
+                    console.error('Error details:', error);
+                }
+            }
+            
+            // جستجو در ویکی‌پدیا
+            async function searchWikipedia(query) {
+                const response = await fetch(`https://fa.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&origin=*`);
+                const data = await response.json();
+                
+                return data.query.search.map(item => ({
+                    title: item.title,
+                    link: `https://fa.wikipedia.org/wiki/${encodeURIComponent(item.title)}`,
+                    summary: item.snippet
+                }));
+            }
+            
+            // جستجو در اخبار (استفاده از News API - نیاز به کلید API دارد)
+            async function searchNews(query) {
+                // در حالت واقعی، اینجا باید از News API استفاده کنید
+                // اما برای نمایش، از داده‌های نمونه استفاده می‌کنیم
+                return [
+                    {
+                        title: `خبرهای مربوط به ${query}`,
+                        link: `https://example.com/news/${encodeURIComponent(query)}`,
+                        summary: `تازه‌ترین اخبار و مقالات درباره ${query} را در اینجا بخوانید.`
+                    },
+                    {
+                        title: `تحلیل بازار ${query}`,
+                        link: `https://example.com/analysis/${encodeURIComponent(query)}`,
+                        summary: `تحلیل جامع و به روز از بازار ${query} و روندهای آینده آن.`
+                    },
+                    {
+                        title: `تأثیر ${query} بر اقتصاد`,
+                        link: `https://example.com/economy/${encodeURIComponent(query)}`,
+                        summary: `بررسی تأثیرات ${query} بر اقتصاد جهانی و محلی در این مقاله.`
+                    }
+                ];
+            }
+            
+            // جستجو در داک‌داک‌گو
+            async function searchDuckDuckGo(query) {
+                const response = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`);
+                const data = await response.json();
+                
+                const results = [];
+                
+                if (data.AbstractText) {
+                    results.push({
+                        title: data.Heading || query,
+                        link: data.AbstractURL || `https://duckduckgo.com/?q=${encodeURIComponent(query)}`,
+                        summary: data.AbstractText
+                    });
+                }
+                
+                if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+                    data.RelatedTopics.forEach(topic => {
+                        if (topic.Text && topic.FirstURL) {
+                            results.push({
+                                title: topic.Text.substring(0, 60) + (topic.Text.length > 60 ? '...' : ''),
+                                link: topic.FirstURL,
+                                summary: topic.Text
+                            });
+                        }
+                    });
+                }
+                
+                return results.slice(0, 5); // محدود کردن به ۵ نتیجه
+            }
+            
+            // جستجو در استک اورفلو
+            async function searchStackOverflow(query) {
+                const response = await fetch(`https://api.stackexchange.com/2.3/search/advanced?order=desc&sort=relevance&q=${encodeURIComponent(query)}&site=stackoverflow&filter=withbody`);
+                const data = await response.json();
+                
+                return data.items.map(item => ({
+                    title: item.title,
+                    link: item.link,
+                    summary: item.body.substring(0, 200) + '...'
+                }));
+            }
+            
+            // تابع برای نمایش نتایج
+            function displayResults(results, query) {
+                loadingIndicator.style.display = 'none';
+                resultsHeader.textContent = `نتایج جستجو برای "${query}"`;
+                resultsList.innerHTML = '';
+                
+                if (!results || results.length === 0) {
+                    resultsList.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <h3>نتیجه‌ای یافت نشد</h3>
+                            <p>لطفاً عبارت جستجوی خود را تغییر دهید یا موتور جستجو را عوض کنید.</p>
+                        </div>
+                    `;
+                } else {
+                    // نمایش هر نتیجه
+                    results.forEach((result, index) => {
+                        const resultElement = document.createElement('div');
+                        resultElement.className = 'result-card';
+                        
+                        // خلاصه‌سازی متن (در صورت طولانی بودن)
+                        let summary = result.summary;
+                        if (summary && summary.length > 250) {
+                            summary = summary.substring(0, 250) + '...';
+                        }
+                        
+                        resultElement.innerHTML = `
+                            <a href="${result.link}" class="result-title" target="_blank">
+                                <i class="fas fa-external-link-alt"></i> ${result.title}
+                            </a>
+                            <div class="result-url">${result.link}</div>
+                            <div class="result-summary">${summary || 'خلاصه‌ای برای این نتیجه موجود نیست.'}</div>
+                        `;
+                        
+                        resultsList.appendChild(resultElement);
+                    });
+                }
+                
+                resultsContainer.style.display = 'block';
+                
+                // اسکرول به نتایج
+                resultsContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // رویداد کلیک روی دکمه جستجو
+            searchButton.addEventListener('click', function() {
+                const query = searchInput.value.trim();
+                
+                if (query) {
+                    performSearch(query);
+                } else {
+                    showError('لطفاً یک عبارت برای جستجو وارد کنید.');
+                }
+            });
+            
+            // رویداد فشار کلید Enter در فیلد جستجو
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchButton.click();
+                }
+            });
+            
+            // تمرکز خودکار روی فیلد جستجو
+            searchInput.focus();
+        });
+    </script>
+</body>
+</html>
